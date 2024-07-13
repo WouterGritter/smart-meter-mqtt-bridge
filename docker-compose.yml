@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  smart-meter-mqtt-bridge:
+    build: '.'
+    devices:
+      - ${SMART_METER_SERIAL_PORT}
+    environment:
+      SMART_METER_TYPE: 'dts353f'
+      SMART_METER_CONNECTION_TYPE: 'serial'
+      SMART_METER_SERIAL_PORT: ${SMART_METER_SERIAL_PORT}
+      MQTT_BROKER_ADDRESS: ${MQTT_BROKER_ADDRESS:-localhost}
+      MQTT_TOPIC_PREFIX: 'smart-meter'
+    restart: unless-stopped

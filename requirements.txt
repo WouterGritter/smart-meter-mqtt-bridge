@@ -1,0 +1,5 @@
+pymodbus[serial]~=3.6.9
+pyserial==3.5
+paho-mqtt~=2.1.0
+numpy~=2.0.0
+python-dotenv~=1.0.1
