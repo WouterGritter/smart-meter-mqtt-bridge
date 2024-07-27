@@ -19,16 +19,16 @@ class P1SmartMeter(SmartMeter):
     def fetch_measurement(self) -> SmartMeterPacket:
         packet = self.read_p1_packet()
 
-        l1_voltage = find_measurement(packet, '32.7.0', 0)
-        l1_power = find_measurement(packet, '21.7.0', 0) - find_measurement(packet, '22.7.0', 0)
+        l1_voltage = find_measurement(packet, '32.7.0')
+        l1_power = find_measurement(packet, '21.7.0') - find_measurement(packet, '22.7.0')
         l1_amperage = (l1_power * 1000.0) / l1_voltage
 
-        l2_voltage = find_measurement(packet, '52.7.0', 0)
-        l2_power = find_measurement(packet, '41.7.0', 0) - find_measurement(packet, '42.7.0', 0)
+        l2_voltage = find_measurement(packet, '52.7.0')
+        l2_power = find_measurement(packet, '41.7.0') - find_measurement(packet, '42.7.0')
         l2_amperage = (l2_power * 1000.0) / l2_voltage
 
-        l3_voltage = find_measurement(packet, '72.7.0', 0)
-        l3_power = find_measurement(packet, '61.7.0', 0) - find_measurement(packet, '62.7.0', 0)
+        l3_voltage = find_measurement(packet, '72.7.0')
+        l3_power = find_measurement(packet, '61.7.0') - find_measurement(packet, '62.7.0')
         l3_amperage = (l3_power * 1000.0) / l3_voltage
 
         return SmartMeterPacket(
@@ -36,24 +36,24 @@ class P1SmartMeter(SmartMeter):
                 voltage=l1_voltage,
                 amperage=l1_amperage,
                 power=l1_power,
-                energy=None
+                energy=None,
             ),
             phase_l2=PhaseData(
                 voltage=l2_voltage,
                 amperage=l2_amperage,
                 power=l2_power,
-                energy=None
+                energy=None,
             ),
             phase_l3=PhaseData(
                 voltage=l3_voltage,
                 amperage=l3_amperage,
                 power=l3_power,
-                energy=None
+                energy=None,
             ),
-            power=find_measurement(packet, '1.7.0', 0) - find_measurement(packet, '2.7.0', 0),
+            power=find_measurement(packet, '1.7.0') - find_measurement(packet, '2.7.0'),
             energy=EnergyData(
-                delivery=find_measurement(packet, '1.8.1', 0) + find_measurement(packet, '1.8.2', 0),
-                redelivery=find_measurement(packet, '2.8.1', 0) + find_measurement(packet, '2.8.2', 0)
+                delivery=find_measurement(packet, '1.8.1') + find_measurement(packet, '1.8.2'),
+                redelivery=find_measurement(packet, '2.8.1') + find_measurement(packet, '2.8.2')
             ),
             frequency=None,
 
