@@ -3,7 +3,7 @@ from pymodbus.client.base import ModbusBaseSyncClient
 from smart_meter.modbus_smart_meter import ModbusSmartMeter, ModbusAddresses, ModbusUnitConversion
 
 
-# https://www.cfos-emobility.de/files/cfos-ytl-dts353-modbus-registers.pdf
+# https://docs.vekto.nl/media/eastron/eastron-sdm72dm-user-manual-v1.5.pdf
 class Sdm72dmSmartMeter(ModbusSmartMeter):
     def __init__(self, modbus_client: ModbusBaseSyncClient, measurement_interval: float):
         super().__init__(
