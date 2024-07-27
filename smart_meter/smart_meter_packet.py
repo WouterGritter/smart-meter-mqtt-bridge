@@ -12,10 +12,13 @@ class MqttDataClass(ABC):
 
 @dataclass
 class EnergyData(MqttDataClass):
-    delivery: float  # kWh
+    delivery: Optional[float]  # kWh
     redelivery: Optional[float]  # kWh
 
     def to_topics(self, topic_prefix: str = '') -> dict[str, float]:
+        if self.delivery is None:
+            return {}
+
         if self.redelivery is None:
             return {
                 f'{topic_prefix}': self.delivery,
