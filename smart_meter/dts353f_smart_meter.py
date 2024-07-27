@@ -1,6 +1,6 @@
 from pymodbus.client.base import ModbusBaseSyncClient
 
-from smart_meter.modbus_smart_meter import ModbusSmartMeter, ModbusAddresses
+from smart_meter.modbus_smart_meter import ModbusSmartMeter, ModbusAddresses, ModbusUnitConversion
 
 
 # https://www.cfos-emobility.de/files/cfos-ytl-dts353-modbus-registers.pdf
@@ -36,6 +36,7 @@ class Dts353fSmartMeter(ModbusSmartMeter):
                 gas=None,
                 water=None,
             ),
+            unit_conversion=ModbusUnitConversion(),
             modbus_register_type='holding',
             measurement_interval=measurement_interval,
         )

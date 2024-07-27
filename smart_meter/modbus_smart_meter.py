@@ -39,13 +39,26 @@ class ModbusAddresses:
     water: Optional[int]
 
 
+@dataclass
+class ModbusUnitConversion:
+    # Modbus values are multiplied by the factors defined below, and should result in the commented unit.
+    voltage: Optional[float] = None  # -> V
+    amperage: Optional[float] = None  # -> A
+    power: Optional[float] = None  # -> kW
+    energy: Optional[float] = None  # -> kWh
+    frequency: Optional[float] = None  # -> Hz
+    gas: Optional[float] = None  # -> m^3
+    water: Optional[float] = None  # -> m^3
+
+
 class ModbusSmartMeter(PollingSmartMeter):
 
-    def __init__(self, modbus_client: ModbusBaseSyncClient, modbus_addresses: ModbusAddresses, modbus_register_type: Literal['holding', 'input'], measurement_interval: float):
+    def __init__(self, modbus_client: ModbusBaseSyncClient, modbus_addresses: ModbusAddresses, unit_conversion: ModbusUnitConversion, modbus_register_type: Literal['holding', 'input'], measurement_interval: float):
         super().__init__(measurement_interval)
 
         self.modbus_client = modbus_client
         self.modbus_addresses = modbus_addresses
+        self.unit_conversion = unit_conversion
         self.modbus_register_type = modbus_register_type
 
         self.modbus_client.connect()
@@ -59,30 +72,30 @@ class ModbusSmartMeter(PollingSmartMeter):
                                            addresses.l2_delivery, addresses.l2_redelivery),
             phase_l3=self.fetch_phase_data(addresses.l3_voltage, addresses.l3_amperage, addresses.l3_power,
                                            addresses.l3_delivery, addresses.l3_redelivery),
-            power=self.read_register(addresses.total_power),
+            power=self.read_register(addresses.total_power, self.unit_conversion.power),
             energy=self.fetch_energy_data(addresses.total_delivery, addresses.total_redelivery),
-            frequency=self.read_register(addresses.frequency),
-            gas=self.read_register(addresses.gas),
-            water=self.read_register(addresses.water),
+            frequency=self.read_register(addresses.frequency, self.unit_conversion.frequency),
+            gas=self.read_register(addresses.gas, self.unit_conversion.gas),
+            water=self.read_register(addresses.water, self.unit_conversion.water),
         )
 
     def fetch_phase_data(self, voltage_register: Optional[int], amperage_register: Optional[int],
                          power_register: Optional[int], delivery_register: Optional[int],
                          redelivery_register: Optional[int]) -> PhaseData:
         return PhaseData(
-            voltage=self.read_register(voltage_register),
-            amperage=self.read_register(amperage_register),
-            power=self.read_register(power_register),
+            voltage=self.read_register(voltage_register, self.unit_conversion.voltage),
+            amperage=self.read_register(amperage_register, self.unit_conversion.amperage),
+            power=self.read_register(power_register, self.unit_conversion.power),
             energy=self.fetch_energy_data(delivery_register, redelivery_register),
         )
 
     def fetch_energy_data(self, delivery_register: Optional[int], redelivery_register: Optional[int]) -> Optional[EnergyData]:
         return EnergyData(
-            delivery=self.read_register(delivery_register),
-            redelivery=self.read_register(redelivery_register),
+            delivery=self.read_register(delivery_register, self.unit_conversion.energy),
+            redelivery=self.read_register(redelivery_register, self.unit_conversion.energy),
         )
 
-    def read_register(self, address: Optional[int]) -> Optional[float]:
+    def read_register(self, address: Optional[int], unit_correction_factor: Optional[float]) -> Optional[float]:
         if address is None:
             return None
 
@@ -95,5 +108,8 @@ class ModbusSmartMeter(PollingSmartMeter):
 
         combined_registers = (registers[0] << 16) | registers[1]
         float_value = struct.unpack('>f', struct.pack('>I', combined_registers))[0]
+
+        if unit_correction_factor is not None:
+            float_value = float_value * unit_correction_factor
 
         return float_value
