@@ -32,9 +32,6 @@ class Dts353fSmartMeter(ModbusSmartMeter):
                 total_redelivery=0x0110,
 
                 frequency=0x0014,
-
-                gas=None,
-                water=None,
             ),
             unit_conversion=ModbusUnitConversion(),
             modbus_register_type='holding',

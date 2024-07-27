@@ -10,33 +10,33 @@ from smart_meter.smart_meter_packet import SmartMeterPacket, PhaseData, EnergyDa
 
 @dataclass
 class ModbusAddresses:
-    l1_voltage: Optional[int]
-    l1_amperage: Optional[int]
-    l1_power: Optional[int]
-    l1_delivery: Optional[int]
-    l1_redelivery: Optional[int]
+    l1_voltage: Optional[int] = None
+    l1_amperage: Optional[int] = None
+    l1_power: Optional[int] = None
+    l1_delivery: Optional[int] = None
+    l1_redelivery: Optional[int] = None
 
-    l2_voltage: Optional[int]
-    l2_amperage: Optional[int]
-    l2_power: Optional[int]
-    l2_delivery: Optional[int]
-    l2_redelivery: Optional[int]
+    l2_voltage: Optional[int] = None
+    l2_amperage: Optional[int] = None
+    l2_power: Optional[int] = None
+    l2_delivery: Optional[int] = None
+    l2_redelivery: Optional[int] = None
 
-    l3_voltage: Optional[int]
-    l3_amperage: Optional[int]
-    l3_power: Optional[int]
-    l3_delivery: Optional[int]
-    l3_redelivery: Optional[int]
+    l3_voltage: Optional[int] = None
+    l3_amperage: Optional[int] = None
+    l3_power: Optional[int] = None
+    l3_delivery: Optional[int] = None
+    l3_redelivery: Optional[int] = None
 
-    total_power: Optional[int]
-    total_delivery: Optional[int]
-    total_redelivery: Optional[int]
+    total_power: Optional[int] = None
+    total_delivery: Optional[int] = None
+    total_redelivery: Optional[int] = None
 
-    frequency: Optional[int]
+    frequency: Optional[int] = None
 
-    gas: Optional[int]
+    gas: Optional[int] = None
 
-    water: Optional[int]
+    water: Optional[int] = None
 
 
 @dataclass
