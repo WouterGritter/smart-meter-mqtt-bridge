@@ -12,7 +12,7 @@ A bridge for multiple "smart meters" (eg. electricity meters that can be read ou
 - `MQTT_RETAIN` (defaults to `true`)
 
 **Smart-meter variables**
-- `SMART_METER_TYPE` (available types: `dts353f`, `p1`)
+- `SMART_METER_TYPE` (available types: `dts353f`, `sdm72dm`, `p1`)
 
 Other smart-meter specific variables need to be present depending on which smart meter is connected. To figure out which environment variables are required by your smart meter, fill out only the `SMART_METER_TYPE` environment variable and look for errors when running the Docker image. Additional variables might have different defaults depending on the smart meter type, and include:
 - `SMART_METER_CONNECTION_TYPE`
@@ -31,7 +31,7 @@ Other smart-meter specific variables need to be present depending on which smart
 
 - `P1`, most Dutch smart electricity meters support this serial-based protocol
 - `DTS353F`, a modbus electricity meter by YTL
-- `SDM72D-M`, a modbus electricity meter by Eastron (will get implemented in the near future)
+- `SDM72D-M`, a modbus electricity meter by Eastron
 
 ## MQTT topics
 

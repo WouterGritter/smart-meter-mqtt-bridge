@@ -4,6 +4,7 @@ from pymodbus.client import ModbusSerialClient, ModbusTcpClient
 from serial import Serial
 
 from smart_meter.dts353f_smart_meter import Dts353fSmartMeter
+from smart_meter.sdm72dm_smart_meter import Sdm72dmSmartMeter
 from smart_meter.p1_smart_meter import P1SmartMeter
 
 # Factory environment variable keys
@@ -28,6 +29,17 @@ def build_smart_meter():
                 def_baudrate=9600,
                 def_bytesize=8,
                 def_parity='E',
+                def_stopbits=1,
+                def_timeout=0.5,
+            ),
+            measurement_interval=float(os.getenv(SMART_METER_MEASUREMENT_INTERVAL, '2.0'))
+        )
+    elif sm_type == 'sdm72dm':
+        return Sdm72dmSmartMeter(
+            modbus_client=build_modbus_device(
+                def_baudrate=9600,
+                def_bytesize=8,
+                def_parity='N',
                 def_stopbits=1,
                 def_timeout=0.5,
             ),
