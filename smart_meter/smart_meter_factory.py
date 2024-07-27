@@ -43,7 +43,7 @@ def build_smart_meter():
                 def_stopbits=1,
                 def_timeout=0.5,
             ),
-            measurement_interval=float(os.getenv(SMART_METER_MEASUREMENT_INTERVAL, '2.0'))
+            measurement_interval=float(os.getenv(SMART_METER_MEASUREMENT_INTERVAL, '4.0'))
         )
     elif sm_type == 'p1':
         return P1SmartMeter(
