@@ -36,5 +36,6 @@ class Dts353fSmartMeter(ModbusSmartMeter):
                 gas=None,
                 water=None,
             ),
+            modbus_register_type='holding',
             measurement_interval=measurement_interval,
         )

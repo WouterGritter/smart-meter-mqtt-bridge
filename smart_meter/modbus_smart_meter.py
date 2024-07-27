@@ -1,6 +1,6 @@
 import struct
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Literal
 
 from pymodbus.client.base import ModbusBaseSyncClient
 
@@ -41,11 +41,12 @@ class ModbusAddresses:
 
 class ModbusSmartMeter(PollingSmartMeter):
 
-    def __init__(self, modbus_client: ModbusBaseSyncClient, modbus_addresses: ModbusAddresses, measurement_interval: float):
+    def __init__(self, modbus_client: ModbusBaseSyncClient, modbus_addresses: ModbusAddresses, modbus_register_type: Literal['holding', 'input'], measurement_interval: float):
         super().__init__(measurement_interval)
 
         self.modbus_client = modbus_client
         self.modbus_addresses = modbus_addresses
+        self.modbus_register_type = modbus_register_type
 
         self.modbus_client.connect()
 
@@ -85,7 +86,13 @@ class ModbusSmartMeter(PollingSmartMeter):
         if address is None:
             return None
 
-        registers = self.modbus_client.read_holding_registers(address, 2, slave=1).registers
+        if self.modbus_register_type == 'holding':
+            registers = self.modbus_client.read_holding_registers(address, 2, slave=1).registers
+        elif self.modbus_register_type == 'input':
+            registers = self.modbus_client.read_input_registers(address, 2, slave=1).registers
+        else:
+            raise Exception(f'Invalid modbus_register_type \'{self.modbus_register_type}\'')
+
         combined_registers = (registers[0] << 16) | registers[1]
         float_value = struct.unpack('>f', struct.pack('>I', combined_registers))[0]
 
