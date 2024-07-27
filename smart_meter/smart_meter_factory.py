@@ -4,8 +4,8 @@ from pymodbus.client import ModbusSerialClient, ModbusTcpClient
 from serial import Serial
 
 from smart_meter.dts353f_smart_meter import Dts353fSmartMeter
-from smart_meter.sdm72dm_smart_meter import Sdm72dmSmartMeter
 from smart_meter.p1_smart_meter import P1SmartMeter
+from smart_meter.sdm72dm_smart_meter import Sdm72dmSmartMeter
 
 # Factory environment variable keys
 SMART_METER_TYPE = 'SMART_METER_TYPE'

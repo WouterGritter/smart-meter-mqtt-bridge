@@ -1,9 +1,7 @@
 import os
-
-import paho.mqtt.client as mqtt
-
 from typing import Optional
 
+import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
 from smart_meter.smart_meter_factory import build_smart_meter
