@@ -11,9 +11,10 @@ class PollingSmartMeter(SmartMeter, ABC):
         self.measurement_interval = measurement_interval
 
     def start_measuring(self, packet_callback: Callable[[SmartMeterPacket], None]):
-        while True:
-            time.sleep(self.measurement_interval)
+        time.sleep(self.measurement_interval)
 
+        while True:
+            start = time.time()
             try:
                 packet = self.fetch_smart_meter_packet()
             except Exception as ex:
@@ -24,6 +25,10 @@ class PollingSmartMeter(SmartMeter, ABC):
                 packet_callback(packet)
             except Exception as ex:
                 print(f'An error occurred while processing smart meter packet: {ex}')
+
+            elapsed = time.time() - start
+            time.sleep(max(0.0, self.measurement_interval - elapsed))
+
 
     @abstractmethod
     def fetch_smart_meter_packet(self) -> SmartMeterPacket:
