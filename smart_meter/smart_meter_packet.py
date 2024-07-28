@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Self
 
 
 class MqttDataClass(ABC):
@@ -30,6 +30,12 @@ class EnergyData(MqttDataClass):
                 f'{topic_prefix}/redelivery': round(self.redelivery, 3),
             }
 
+    def reverse_energy_direction(self) -> Self:
+        return EnergyData(
+            delivery=self.redelivery,
+            redelivery=self.delivery,
+        )
+
 
 @dataclass
 class PhaseData(MqttDataClass):
@@ -50,6 +56,28 @@ class PhaseData(MqttDataClass):
             topics.update(self.energy.to_topics(f'{topic_prefix}/energy'))
 
         return topics
+
+    def reverse_power_direction(self) -> Self:
+        if self.power is not None:
+            return PhaseData(
+                voltage=self.voltage,
+                amperage=self.amperage,
+                power=self.power * -1,
+                energy=self.energy,
+            )
+
+        return self
+
+    def reverse_energy_direction(self) -> Self:
+        if self.energy is not None:
+            return PhaseData(
+                voltage=self.voltage,
+                amperage=self.amperage,
+                power=self.power,
+                energy=self.energy.reverse_energy_direction(),
+            )
+
+        return self
 
 
 @dataclass
@@ -83,3 +111,27 @@ class SmartMeterPacket(MqttDataClass):
             topics[f'{topic_prefix}/water'] = round(self.water, 3)
 
         return topics
+
+    def reverse_power_direction(self) -> Self:
+        return SmartMeterPacket(
+            phase_l1=None if self.phase_l1 is None else self.phase_l1.reverse_power_direction(),
+            phase_l2=None if self.phase_l2 is None else self.phase_l2.reverse_power_direction(),
+            phase_l3=None if self.phase_l3 is None else self.phase_l3.reverse_power_direction(),
+            power=None if self.power is None else self.power * -1,
+            energy=self.energy,
+            frequency=self.frequency,
+            gas=self.gas,
+            water=self.water,
+        )
+
+    def reverse_energy_direction(self) -> Self:
+        return SmartMeterPacket(
+            phase_l1=None if self.phase_l1 is None else self.phase_l1.reverse_energy_direction(),
+            phase_l2=None if self.phase_l2 is None else self.phase_l2.reverse_energy_direction(),
+            phase_l3=None if self.phase_l3 is None else self.phase_l3.reverse_energy_direction(),
+            power=self.power,
+            energy=None if self.energy is None else self.energy.reverse_energy_direction(),
+            frequency=self.frequency,
+            gas=self.gas,
+            water=self.water,
+        )
