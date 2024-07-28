@@ -15,20 +15,26 @@ class EnergyData(MqttDataClass):
     delivery: Optional[float]  # kWh
     redelivery: Optional[float]  # kWh
 
-    def to_topics(self, topic_prefix: str = '') -> dict[str, float]:
-        if self.delivery is None:
-            return {}
+    @property
+    def total(self) -> Optional[float]:
+        if self.delivery is None and self.redelivery is None:
+            return None
 
-        if self.redelivery is None:
-            return {
-                f'{topic_prefix}': self.delivery,
-            }
-        else:
-            return {
-                f'{topic_prefix}': round(self.delivery - self.redelivery, 3),
-                f'{topic_prefix}/delivery': round(self.delivery, 3),
-                f'{topic_prefix}/redelivery': round(self.redelivery, 3),
-            }
+        delivery = 0 if self.delivery is None else self.delivery
+        redelivery = 0 if self.redelivery is None else self.redelivery
+        return delivery - redelivery
+
+    def to_topics(self, topic_prefix: str = '') -> dict[str, float]:
+        topics = {}
+
+        if self.total is not None:
+            topics[f'{topic_prefix}'] = round(self.total, 3),
+
+        if self.delivery is not None and self.redelivery is not None:
+            topics[f'{topic_prefix}/delivery'] = round(self.delivery, 3)
+            topics[f'{topic_prefix}/redelivery'] = round(self.redelivery, 3)
+
+        return topics
 
     def reverse_energy_direction(self) -> Self:
         return EnergyData(
