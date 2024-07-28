@@ -28,7 +28,7 @@ class EnergyData(MqttDataClass):
         topics = {}
 
         if self.total is not None:
-            topics[f'{topic_prefix}'] = round(self.total, 3),
+            topics[f'{topic_prefix}'] = round(self.total, 3)
 
         if self.delivery is not None and self.redelivery is not None:
             topics[f'{topic_prefix}/delivery'] = round(self.delivery, 3)
