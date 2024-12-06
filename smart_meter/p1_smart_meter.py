@@ -68,6 +68,7 @@ class P1SmartMeter(SmartMeter):
             while '!' not in line:
                 line = self.serial_device.readline().decode()
                 line = line.replace('\r', '')
+                line = line.replace('\n', '')
                 packet.append(line)
 
             return packet
