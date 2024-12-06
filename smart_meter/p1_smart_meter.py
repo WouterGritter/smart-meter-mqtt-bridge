@@ -3,7 +3,7 @@ from typing import Callable, Optional
 import serial
 
 from smart_meter.smart_meter import SmartMeter
-from smart_meter.smart_meter_packet import SmartMeterPacket, PhaseData, EnergyData
+from smart_meter.smart_meter_packet import SmartMeterPacket, PhaseData, EnergyData, EnergyTariff
 
 
 # https://github.com/jvhaarst/DSMR-P1-telegram-reader/blob/master/documentation/Dutch%20Smart%20Meter%20Requirements%20v5.0.2%20Final%20P1.pdf
@@ -52,7 +52,7 @@ class P1SmartMeter(SmartMeter):
                 delivery=find_measurement(packet, '1.8.1') + find_measurement(packet, '1.8.2'),
                 redelivery=find_measurement(packet, '2.8.1') + find_measurement(packet, '2.8.2')
             ),
-            tariff='high' if find_measurement(packet, '96.14.0') == 2 else 'low',
+            tariff=EnergyTariff(int(find_measurement(packet, '96.14.0'))),
 
             # I think this will break when you are only/also measuring water usage, as it uses the same OBIS reference.
             # This might require looking at the equipment identifier.

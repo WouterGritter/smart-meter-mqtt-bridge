@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional, Self, Literal, Union
 
 
@@ -86,6 +87,11 @@ class PhaseData(MqttDataClass):
         return self
 
 
+class EnergyTariff(Enum):
+    LOW = 1
+    HIGH = 2
+
+
 @dataclass
 class SmartMeterPacket(MqttDataClass):
     phase_l1: Optional[PhaseData] = None
@@ -94,11 +100,11 @@ class SmartMeterPacket(MqttDataClass):
     power: Optional[float] = None  # kW
     energy: Optional[EnergyData] = None
     frequency: Optional[float] = None  # Hz
-    tariff: Optional[Literal['low', 'high']] = None
+    tariff: Optional[EnergyTariff] = None
     gas: Optional[float] = None  # m^3
     water: Optional[float] = None  # m^3
 
-    def to_topics(self, topic_prefix: str = '') -> dict[str, Union[float, str]]:
+    def to_topics(self, topic_prefix: str = '') -> dict[str, float]:
         topics = {}
         if self.phase_l1 is not None:
             topics.update(self.phase_l1.to_topics(f'{topic_prefix}/l1'))
@@ -113,7 +119,7 @@ class SmartMeterPacket(MqttDataClass):
         if self.frequency is not None:
             topics[f'{topic_prefix}/frequency'] = round(self.frequency, 3)
         if self.tariff is not None:
-            topics[f'{topic_prefix}/tariff'] = self.tariff
+            topics[f'{topic_prefix}/tariff'] = self.tariff.value
         if self.gas is not None:
             topics[f'{topic_prefix}/gas'] = round(self.gas, 3)
         if self.water is not None:
