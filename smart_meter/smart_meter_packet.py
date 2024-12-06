@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Optional, Self, Literal, Union
 
 
 class MqttDataClass(ABC):
@@ -12,8 +12,8 @@ class MqttDataClass(ABC):
 
 @dataclass
 class EnergyData(MqttDataClass):
-    delivery: Optional[float]  # kWh
-    redelivery: Optional[float]  # kWh
+    delivery: Optional[float] = None  # kWh
+    redelivery: Optional[float] = None  # kWh
 
     @property
     def total(self) -> Optional[float]:
@@ -45,10 +45,10 @@ class EnergyData(MqttDataClass):
 
 @dataclass
 class PhaseData(MqttDataClass):
-    voltage: Optional[float]  # V
-    amperage: Optional[float]  # A
-    power: Optional[float]  # kW
-    energy: Optional[EnergyData]
+    voltage: Optional[float] = None  # V
+    amperage: Optional[float] = None  # A
+    power: Optional[float] = None  # kW
+    energy: Optional[EnergyData] = None
 
     def to_topics(self, topic_prefix: str = '') -> dict[str, float]:
         topics = {}
@@ -88,16 +88,17 @@ class PhaseData(MqttDataClass):
 
 @dataclass
 class SmartMeterPacket(MqttDataClass):
-    phase_l1: Optional[PhaseData]
-    phase_l2: Optional[PhaseData]
-    phase_l3: Optional[PhaseData]
-    power: Optional[float]  # kW
-    energy: Optional[EnergyData]
-    frequency: Optional[float]  # Hz
-    gas: Optional[float]  # m^3
-    water: Optional[float]  # m^3
+    phase_l1: Optional[PhaseData] = None
+    phase_l2: Optional[PhaseData] = None
+    phase_l3: Optional[PhaseData] = None
+    power: Optional[float] = None  # kW
+    energy: Optional[EnergyData] = None
+    frequency: Optional[float] = None  # Hz
+    tariff: Optional[Literal['low', 'high']] = None
+    gas: Optional[float] = None  # m^3
+    water: Optional[float] = None  # m^3
 
-    def to_topics(self, topic_prefix: str = '') -> dict[str, float]:
+    def to_topics(self, topic_prefix: str = '') -> dict[str, Union[float, str]]:
         topics = {}
         if self.phase_l1 is not None:
             topics.update(self.phase_l1.to_topics(f'{topic_prefix}/l1'))
@@ -111,6 +112,8 @@ class SmartMeterPacket(MqttDataClass):
             topics.update(self.energy.to_topics(f'{topic_prefix}/energy'))
         if self.frequency is not None:
             topics[f'{topic_prefix}/frequency'] = round(self.frequency, 3)
+        if self.tariff is not None:
+            topics[f'{topic_prefix}/tariff'] = self.tariff
         if self.gas is not None:
             topics[f'{topic_prefix}/gas'] = round(self.gas, 3)
         if self.water is not None:

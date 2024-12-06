@@ -36,26 +36,23 @@ class P1SmartMeter(SmartMeter):
                 voltage=l1_voltage,
                 amperage=l1_amperage,
                 power=l1_power,
-                energy=None,
             ),
             phase_l2=PhaseData(
                 voltage=l2_voltage,
                 amperage=l2_amperage,
                 power=l2_power,
-                energy=None,
             ),
             phase_l3=PhaseData(
                 voltage=l3_voltage,
                 amperage=l3_amperage,
                 power=l3_power,
-                energy=None,
             ),
             power=find_measurement(packet, '1.7.0') - find_measurement(packet, '2.7.0'),
             energy=EnergyData(
                 delivery=find_measurement(packet, '1.8.1') + find_measurement(packet, '1.8.2'),
                 redelivery=find_measurement(packet, '2.8.1') + find_measurement(packet, '2.8.2')
             ),
-            frequency=None,
+            tariff='high' if find_measurement(packet, '96.14.0') == 2 else 'low',
 
             # I think this will break when you are only/also measuring water usage, as it uses the same OBIS reference.
             # This might require looking at the equipment identifier.

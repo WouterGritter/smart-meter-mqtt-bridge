@@ -47,6 +47,7 @@ Depending on which parameters are exposed by the electricity meter, it will publ
 - `{prefix}/energy/delivery`: total energy delivery in kWh
 - `{prefix}/energy/redelivery`: total energy redelivery in kWh
 - `{prefix}/frequency`: grid frequency in Hz
+- `{prefix}/tariff`: current tariff (low or high)
 - `{prefix}/gas`: gas usage in m^3
 - `{prefix}/water`: water usage in m^3
 
